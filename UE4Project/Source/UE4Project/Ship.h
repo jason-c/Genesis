@@ -12,6 +12,7 @@ class UE4PROJECT_API AShip : public APawn
 
 private:
 	UStaticMeshComponent* StaticMesh;
+	bool IsAccelerating;
 
 public:
 	AShip();
@@ -22,5 +23,6 @@ public:
 	void SetMesh(UStaticMesh* mesh);
 
 private:
-	void OnAccelerate();
+	virtual void Tick(float deltaSeconds) override;
+	void SetAccelerateOn();	void SetAccelerateOff();
 };

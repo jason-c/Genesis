@@ -6,6 +6,17 @@
 #include "Tweakables.generated.h"
 
 USTRUCT()
+struct FPaddleCameraSettings
+{
+	GENERATED_BODY()
+	UPROPERTY(EditAnywhere) float Distance;
+	UPROPERTY(EditAnywhere) float Height;
+	UPROPERTY(EditAnywhere) float CatchUpTime;
+	UPROPERTY(EditAnywhere) float LookAtHeight;
+	UPROPERTY(EditAnywhere) float LookForwardDistance;
+};
+
+USTRUCT()
 struct FPaddleSettings
 {
 	GENERATED_BODY()
@@ -37,6 +48,7 @@ class UE4PROJECT_API UTweakables : public UDataAsset
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY(EditAnywhere) FPaddleCameraSettings PaddleCamera;
 	UPROPERTY(EditAnywhere) FPaddleSettings PaddleSettings;
 	UPROPERTY(EditAnywhere) FPaddleAssets PaddleAssets;
 	UPROPERTY(EditAnywhere) TArray<FLevelSettings> Levels;

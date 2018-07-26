@@ -3,7 +3,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
 #include "Tweakables.h"
+#include "Paddle.h"
 #include "GenesisGameState.generated.h"
+
+#define PUBLIC_GET_PRIVATE_SET(type, name)\
+	private:\
+		type name;\
+	public:\
+		static type Get##name() { return Instance->name; }
 
 UCLASS()
 class UE4PROJECT_API AGenesisGameState : public AGameStateBase
@@ -12,12 +19,14 @@ class UE4PROJECT_API AGenesisGameState : public AGameStateBase
 
 	static AGenesisGameState* Instance;
 
-	UTweakables* Tweakables;
+	PUBLIC_GET_PRIVATE_SET(UTweakables*, Tweakables);
+	PUBLIC_GET_PRIVATE_SET(APaddle*, Paddle);
 
 public:
+	static AGenesisGameState * Get();
 	virtual void PostInitializeComponents() override;
 
-	static UTweakables* GetTweakables() { return Instance->Tweakables; }
+	void CreateLevel();
 };
 
 typedef AGenesisGameState GS;

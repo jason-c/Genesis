@@ -22,7 +22,7 @@ void APaddleCamera::Tick(float deltaTime)
 	
 	auto actorPosition = ActorToFollow->GetTransform().GetLocation();
 
-	auto cameraDestination = actorPosition - ActorToFollow->GetActorRightVector() * cameraSettings.Distance;
+	auto cameraDestination = actorPosition - ActorToFollow->GetActorForwardVector() * cameraSettings.Distance;
 	cameraDestination.Z += cameraSettings.Height;
 
 	auto currentCameraPosition = GetTransform().GetLocation();
@@ -32,7 +32,7 @@ void APaddleCamera::Tick(float deltaTime)
 	auto newPosition = currentCameraPosition + difference * catchUpAmount;
 
 	auto lookAtPosition = actorPosition;
-	lookAtPosition.Y += cameraSettings.LookForwardDistance;
+	lookAtPosition.X += cameraSettings.LookForwardDistance;
 	lookAtPosition.Z += cameraSettings.LookAtHeight;
 	auto rotator = UKismetMathLibrary::FindLookAtRotation(newPosition, lookAtPosition);
 

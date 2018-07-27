@@ -22,7 +22,7 @@ void AGenesisGameState::CreateLevel()
 	FActorSpawnParameters spawnParameters;
 	spawnParameters.bNoFail = true;
 	spawnParameters.Name = "Boundaries";
-	auto levelBoundaries = world->SpawnActor<AStaticMeshActor>(FVector(0, 0, 0), FRotator(0, 0, 0), spawnParameters);
+	auto levelBoundaries = world->SpawnActor<AStaticMeshActor>(FVector(-1000, 0, 0), FRotator(0, 0, 0), spawnParameters);
 	levelBoundaries->GetStaticMeshComponent()->SetStaticMesh(GS::GetTweakables()->Levels[0].Mesh);
 
 	FActorSpawnParameters spawnParameters1;
@@ -38,4 +38,9 @@ void AGenesisGameState::CreateLevel()
 	auto camera = world->SpawnActor<APaddleCamera>(FVector(0, 0, 0), FRotator(0, 0, 0), spawnParameters2);
 	camera->SetActorToFollow(Paddle);
 	playerController->SetViewTarget(camera);
+
+	FActorSpawnParameters spawnParameters3;
+	spawnParameters3.bNoFail = true;
+	spawnParameters3.Name = "Ball";
+	auto ball = world->SpawnActor<ABall>(FVector(1000, 0, 0), FRotator(0, 0, 0), spawnParameters3);
 }

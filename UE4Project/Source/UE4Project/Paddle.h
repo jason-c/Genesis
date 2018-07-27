@@ -11,7 +11,7 @@ class UE4PROJECT_API APaddle : public APawn
 	GENERATED_BODY()
 
 private:
-	static const FName PaddleXMovementAxisName;
+	static const FName PaddleYMovementAxisName;
 	static const FName LeftEdgeSocketName;
 	static const FName RightEdgeSocketName;
 
@@ -34,6 +34,8 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* inputComponent) override;
 
+	FVector GetNewBallVelocityAfterHit(const FVector& ballVelocity, const FVector& impactPositionInWorld);
+
 private:
-	void SetLengthFromCenter(float length);
+	void SetLength(float length);
 };

@@ -25,6 +25,7 @@ struct FPaddleSettings
 	UPROPERTY(EditAnywhere) float EdgeLength;
 	UPROPERTY(EditAnywhere) float Depth;
 	UPROPERTY(EditAnywhere) float Height;
+	UPROPERTY(EditAnywhere) float EdgesMaxBallReturnAngle;
 };
 
 USTRUCT()
@@ -34,6 +35,14 @@ struct FPaddleAssets
 	UPROPERTY(EditAnywhere) UStaticMesh* MiddleMesh;
 	UPROPERTY(EditAnywhere) UStaticMesh* LeftMesh;
 	UPROPERTY(EditAnywhere) UStaticMesh* RightMesh;
+};
+
+USTRUCT()
+struct FBallSettings
+{
+	GENERATED_BODY()
+	UPROPERTY(EditAnywhere) UStaticMesh* Mesh;
+	UPROPERTY(EditAnywhere) float Radius;
 };
 
 USTRUCT()
@@ -51,5 +60,6 @@ public:
 	UPROPERTY(EditAnywhere) FPaddleCameraSettings PaddleCamera;
 	UPROPERTY(EditAnywhere) FPaddleSettings PaddleSettings;
 	UPROPERTY(EditAnywhere) FPaddleAssets PaddleAssets;
+	UPROPERTY(EditAnywhere) TArray<FBallSettings> Balls;
 	UPROPERTY(EditAnywhere) TArray<FLevelSettings> Levels;
 };

@@ -1,7 +1,8 @@
 #include "Paddle.h"
 #include "GenesisGameState.h"
+#include "Kismet/KismetMathLibrary.h"
 
-const FName APaddle::PaddleXMovementAxisName = "PaddleXMovement";
+const FName APaddle::PaddleYMovementAxisName = "PaddleYMovement";
 const FName APaddle::LeftEdgeSocketName = "LeftEdge";
 const FName APaddle::RightEdgeSocketName = "RightEdge";
 
@@ -21,7 +22,7 @@ void APaddle::BeginPlay()
 	auto& paddleAssets = GS::GetTweakables()->PaddleAssets;
 	auto& paddleSettings = GS::GetTweakables()->PaddleSettings;
 
-	MiddleMesh->AttachTo(Collider);
+	MiddleMesh->AttachToComponent(Collider, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
 	MiddleMesh->SetStaticMesh(paddleAssets.MiddleMesh);
 	LeftMesh->SetStaticMesh(paddleAssets.LeftMesh);
 	LeftMesh->AttachToComponent(MiddleMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), LeftEdgeSocketName);
@@ -31,16 +32,16 @@ void APaddle::BeginPlay()
 	Collider->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
 	Collider->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 
-	SetLengthFromCenter(800); // Change 800 to current player stats
+	SetLength(800); // Change 800 to current player stats
 }
 
 void APaddle::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
-	float xMovement = -GetInputAxisValue(PaddleXMovementAxisName);
-	xMovement *= GS::GetTweakables()->PaddleSettings.DefaultMouseSpeedScaler;
+	float yMovement = GetInputAxisValue(PaddleYMovementAxisName);
+	yMovement *= GS::GetTweakables()->PaddleSettings.DefaultMouseSpeedScaler;
 	FHitResult hitResult;
-	AddActorLocalOffset(FVector(xMovement, 0, 0), true, &hitResult);
+	AddActorLocalOffset(FVector(0, yMovement, 0), true, &hitResult);
 
 	if(hitResult.bBlockingHit)
 	{
@@ -52,10 +53,31 @@ void APaddle::Tick(float deltaTime)
 void APaddle::SetupPlayerInputComponent(UInputComponent* inputComponent)
 {
 	Super::SetupPlayerInputComponent(inputComponent);
-	inputComponent->BindAxis(PaddleXMovementAxisName);
+	inputComponent->BindAxis(PaddleYMovementAxisName);
 }
 
-void APaddle::SetLengthFromCenter(float length)
+FVector APaddle::GetNewBallVelocityAfterHit(const FVector& ballVelocity, const FVector& impactPositionInWorld)
+{
+	auto& paddleSettings = GS::GetTweakables()->PaddleSettings;
+	float distanceFromCenter = impactPositionInWorld.Y - GetActorLocation().Y;
+	float percentFromCenter = distanceFromCenter / (Length * 0.5f);
+
+	float angle = percentFromCenter * paddleSettings.EdgesMaxBallReturnAngle;
+	UE_LOG(LogTemp, Warning, TEXT("Dist: %f"), distanceFromCenter);
+	UE_LOG(LogTemp, Warning, TEXT("Angle: %f"), percentFromCenter);
+
+	const float forwardAngle = 0;
+	auto direction = FVector(
+		UKismetMathLibrary::DegCos(forwardAngle + angle),
+		UKismetMathLibrary::DegSin(forwardAngle + angle),
+		0
+		);
+
+	float currentBallSpeed = ballVelocity.Size();
+	return direction * currentBallSpeed;
+}
+
+void APaddle::SetLength(float length)
 {
 	auto& paddleSettings = GS::GetTweakables()->PaddleSettings;
 
@@ -63,9 +85,9 @@ void APaddle::SetLengthFromCenter(float length)
 
 	float desiredMiddleLength = Length - paddleSettings.EdgeLength * 2;
 	float amountToScaleMiddleMesh = desiredMiddleLength / paddleSettings.InitialMiddleLength;
-	MiddleMesh->SetWorldScale3D(FVector(amountToScaleMiddleMesh, 1, 1));
+	MiddleMesh->SetWorldScale3D(FVector(1, amountToScaleMiddleMesh, 1));
 	LeftMesh->SetWorldScale3D(FVector(1, 1, 1));
 	RightMesh->SetWorldScale3D(FVector(1, 1, 1));
 
-	Collider->SetBoxExtent(FVector(Length / 2, paddleSettings.Depth / 2, paddleSettings.Height / 2), true);
+	Collider->SetBoxExtent(FVector(paddleSettings.Depth / 2, Length / 2, paddleSettings.Height / 2), true);
 }

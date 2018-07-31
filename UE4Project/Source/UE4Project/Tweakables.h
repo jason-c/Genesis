@@ -52,6 +52,27 @@ struct FLevelSettings
 	UPROPERTY(EditAnywhere) UStaticMesh* Mesh;
 };
 
+UENUM(BlueprintType)
+enum class EBlockType : uint8
+{
+	Basic		UMETA(DisplayName = "Basic"),
+	BasicRed	UMETA(DisplayName = "BasicRed"),
+	BasicGreen	UMETA(DisplayName = "BasicGreen"),
+	BasicBlue	UMETA(DisplayName = "BasicBlue"),
+	BasicYellow	UMETA(DisplayName = "BasicYellow"),
+
+	Count
+};
+
+USTRUCT()
+struct FBlockType
+{
+	GENERATED_BODY()
+	UPROPERTY(EditAnywhere) EBlockType Type;
+	UPROPERTY(EditAnywhere) FColor Color;
+	UPROPERTY(EditAnywhere) float HitPoints;
+};
+
 UCLASS()
 class UE4PROJECT_API UTweakables : public UDataAsset
 {
@@ -62,4 +83,7 @@ public:
 	UPROPERTY(EditAnywhere) FPaddleAssets PaddleAssets;
 	UPROPERTY(EditAnywhere) TArray<FBallSettings> Balls;
 	UPROPERTY(EditAnywhere) TArray<FLevelSettings> Levels;
+	UPROPERTY(EditAnywhere) FBlockType BlockTypes[EBlockType::Count];
+
+	UTweakables();
 };

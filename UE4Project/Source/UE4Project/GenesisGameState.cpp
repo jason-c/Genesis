@@ -19,12 +19,6 @@ void AGenesisGameState::CreateLevel()
 	auto world = GetWorld();
 	auto playerController = world->GetFirstPlayerController();
 
-	FActorSpawnParameters spawnParameters;
-	spawnParameters.bNoFail = true;
-	spawnParameters.Name = "Boundaries";
-	auto levelBoundaries = world->SpawnActor<AStaticMeshActor>(FVector(-1000, 0, 0), FRotator(0, 0, 0), spawnParameters);
-	levelBoundaries->GetStaticMeshComponent()->SetStaticMesh(GS::GetTweakables()->Levels[0].Mesh);
-
 	FActorSpawnParameters spawnParameters1;
 	spawnParameters1.bNoFail = true;
 	spawnParameters1.Name = "Paddle";

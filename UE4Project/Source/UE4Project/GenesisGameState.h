@@ -19,11 +19,12 @@ class UE4PROJECT_API AGenesisGameState : public AGameStateBase
 
 	static AGenesisGameState* Instance;
 
-	PUBLIC_GET_PRIVATE_SET(UTweakables*, Tweakables);
+	static UTweakables* Tweakables;
 	PUBLIC_GET_PRIVATE_SET(APaddle*, Paddle);
 
 public:
 	static AGenesisGameState * Get();
+	static UTweakables* GetTweakables();
 	virtual void PostInitializeComponents() override;
 
 	void CreateLevel();

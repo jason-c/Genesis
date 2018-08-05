@@ -7,6 +7,7 @@ ABall::ABall()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
+	RootComponent = Mesh;
 }
 
 void ABall::BeginPlay()
@@ -16,7 +17,7 @@ void ABall::BeginPlay()
 	
 	// Temporary
 	SetBall(0);
-	Velocity = FVector(3000, 0, 0);
+	Velocity = FVector(1000, 0, 0);
 }
 
 void ABall::Tick(float deltaTime)

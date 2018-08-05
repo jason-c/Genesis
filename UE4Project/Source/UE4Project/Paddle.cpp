@@ -13,6 +13,7 @@ APaddle::APaddle()
 	MiddleMesh = CreateDefaultSubobject<UStaticMeshComponent>("MiddleMesh");
 	LeftMesh = CreateDefaultSubobject<UStaticMeshComponent>("LeftMesh");
 	RightMesh = CreateDefaultSubobject<UStaticMeshComponent>("RightMesh");
+	RootComponent = Collider;
 }
 
 void APaddle::BeginPlay()
@@ -63,8 +64,6 @@ FVector APaddle::GetNewBallVelocityAfterHit(const FVector& ballVelocity, const F
 	float percentFromCenter = distanceFromCenter / (Length * 0.5f);
 
 	float angle = percentFromCenter * paddleSettings.EdgesMaxBallReturnAngle;
-	UE_LOG(LogTemp, Warning, TEXT("Dist: %f"), distanceFromCenter);
-	UE_LOG(LogTemp, Warning, TEXT("Angle: %f"), percentFromCenter);
 
 	const float forwardAngle = 0;
 	auto direction = FVector(

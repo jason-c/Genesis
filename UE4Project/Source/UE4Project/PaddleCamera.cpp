@@ -7,6 +7,7 @@ APaddleCamera::APaddleCamera()
 	PrimaryActorTick.bCanEverTick = true;
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("Camera");
+	RootComponent = CameraComponent;
 }
 
 void APaddleCamera::SetActorToFollow(AActor* actor)

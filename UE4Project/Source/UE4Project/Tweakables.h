@@ -43,6 +43,7 @@ struct FBallSettings
 	GENERATED_BODY()
 	UPROPERTY(EditAnywhere) UStaticMesh* Mesh;
 	UPROPERTY(EditAnywhere) float Radius;
+	UPROPERTY(EditAnywhere) float Damage;
 };
 
 USTRUCT()
@@ -56,21 +57,30 @@ UENUM(BlueprintType)
 enum class EBlockType : uint8
 {
 	Basic		UMETA(DisplayName = "Basic"),
-	BasicRed	UMETA(DisplayName = "BasicRed"),
-	BasicGreen	UMETA(DisplayName = "BasicGreen"),
-	BasicBlue	UMETA(DisplayName = "BasicBlue"),
-	BasicYellow	UMETA(DisplayName = "BasicYellow"),
+	BasicRed	UMETA(DisplayName = "Basic Red"),
+	BasicGreen	UMETA(DisplayName = "Basic Green"),
+	BasicBlue	UMETA(DisplayName = "Basic Blue"),
+	BasicYellow	UMETA(DisplayName = "Basic Yellow"),
 
-	Count
+	Count		UMETA(Hidden)
 };
 
 USTRUCT()
 struct FBlockType
 {
 	GENERATED_BODY()
-	UPROPERTY(EditAnywhere) EBlockType Type;
+	UPROPERTY(VisibleAnywhere) EBlockType Type;
+	UPROPERTY(EditAnywhere) UStaticMesh* Mesh;
 	UPROPERTY(EditAnywhere) FColor Color;
 	UPROPERTY(EditAnywhere) float HitPoints;
+	UPROPERTY(EditAnywhere) float MinScale;
+};
+
+USTRUCT()
+struct FBlockSettings
+{
+	GENERATED_BODY()
+	UPROPERTY(EditAnywhere) float ShrinkDuration;
 };
 
 UCLASS()
@@ -83,7 +93,8 @@ public:
 	UPROPERTY(EditAnywhere) FPaddleAssets PaddleAssets;
 	UPROPERTY(EditAnywhere) TArray<FBallSettings> Balls;
 	UPROPERTY(EditAnywhere) TArray<FLevelSettings> Levels;
-	UPROPERTY(EditAnywhere) FBlockType BlockTypes[EBlockType::Count];
+	UPROPERTY(EditAnywhere) FBlockType BlockTypes[(int)EBlockType::Count];
+	UPROPERTY(EditAnywhere) FBlockSettings BlockSettings;
 
 	UTweakables();
 };

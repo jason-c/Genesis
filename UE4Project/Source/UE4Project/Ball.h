@@ -22,8 +22,8 @@ protected:
 
 public:	
 	virtual void Tick(float deltaTime) override;
+	const FBallSettings& GetBallSetting();
 
 private:
 	void SetBall(int ballId);
-	const FBallSettings& GetBallSetting();
 };

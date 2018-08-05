@@ -5,13 +5,22 @@
 #include "Ball.h"
 
 AGenesisGameState* AGenesisGameState::Instance = NULL;
+UTweakables* AGenesisGameState::Tweakables = NULL;
 AGenesisGameState * AGenesisGameState::Get() { return Instance; }
 
 void AGenesisGameState::PostInitializeComponents()
 {
 	AGameStateBase::PostInitializeComponents();
 	Instance = this;
-	Tweakables = LoadObject<UTweakables>(NULL, TEXT("/Game/Tweakables.Tweakables"), NULL, LOAD_None, NULL);
+}
+
+UTweakables* AGenesisGameState::GetTweakables()
+{
+	if (Tweakables == NULL)
+	{
+		Tweakables = LoadObject<UTweakables>(NULL, TEXT("/Game/Tweakables.Tweakables"), NULL, LOAD_None, NULL);
+	}
+	return Tweakables;
 }
 
 void AGenesisGameState::CreateLevel()

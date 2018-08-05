@@ -15,9 +15,9 @@ private:
 	static const FName LeftEdgeSocketName;
 	static const FName RightEdgeSocketName;
 
-	UStaticMeshComponent * MiddleMesh;
-	UStaticMeshComponent * LeftMesh;
-	UStaticMeshComponent * RightMesh;
+	UStaticMeshComponent* MiddleMesh;
+	UStaticMeshComponent* LeftMesh;
+	UStaticMeshComponent* RightMesh;
 
 	UBoxComponent* Collider;
 

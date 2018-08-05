@@ -43,3 +43,11 @@ Build and Play the Game
   (If the build fails, let a programmer know)  
 * Back in the folder where you launch the Visual Studio project, Double click UEProject.uproject to launch the project in UE4  
   Click the Play button near the top of the window  
+
+Other Tools
+-----------
+
+* Blender  
+  https://www.blender.org/download/  
+  Some basics when dealing with UE4:  
+  https://www.youtube.com/watch?v=aC1_m0VdKIY  

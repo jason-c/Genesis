@@ -1,5 +1,6 @@
 #include "GenesisGameState.h"
 #include "Engine/StaticMeshActor.h"
+#include "GenesisPlayerState.h"
 #include "Paddle.h"
 #include "PaddleCamera.h"
 #include "Ball.h"
@@ -46,4 +47,23 @@ void AGenesisGameState::CreateLevel()
 	spawnParameters3.bNoFail = true;
 	spawnParameters3.Name = "Ball";
 	auto ball = world->SpawnActor<ABall>(FVector(1000, 0, 0), FRotator(0, 0, 0), spawnParameters3);
+
+	CollectLevelCreatedActors();
+
+	auto playerState = (AGenesisPlayerState*)PlayerArray[0];
+	playerState->ListenToLevelEvents(this);
+	playerState->InitializeForLevelStarted();
+}
+
+void AGenesisGameState::CollectLevelCreatedActors()
+{
+	auto world = GetWorld();
+	for (TObjectIterator<ADeathZone> itr; itr; ++itr)
+	{
+		if (itr->GetWorld() != world)
+			continue;
+		DeathZones.Add(*itr);
+	}
+
+	// TODO: Clear collected actors when exiting a level
 }

@@ -1,5 +1,6 @@
 #include "Ball.h"
 #include "GenesisGameState.h"
+#include "DeathZone.h"
 #include "Kismet/KismetMathLibrary.h"
 
 ABall::ABall()
@@ -8,53 +9,124 @@ ABall::ABall()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	RootComponent = Mesh;
+
+	States[EBallState::Launching] = &ABall::ProcessLaunchingState;
+	States[EBallState::Moving] = &ABall::ProcessMovingState;
+	States[EBallState::Dying] = &ABall::ProcessDyingState;
+
+	DyingTime = 0;
+}
+
+void ABall::OnConstruction(const FTransform & transform)
+{
+	Mesh->SetMobility(EComponentMobility::Movable);
+	SetBall(0);
+	FrameMaterial = CreateDynamicMaterial(TEXT("FrameMaterial"));
+	GlowMaterial = CreateDynamicMaterial(TEXT("GlowMaterial"));
+}
+
+UMaterialInstanceDynamic* ABall::CreateDynamicMaterial(FName slotName)
+{
+	int slotId = Mesh->GetMaterialIndex(slotName);
+	auto oldMaterial = Mesh->GetMaterial(slotId);
+	auto newMaterial = UMaterialInstanceDynamic::Create(oldMaterial, NULL);
+	Mesh->SetMaterialByName(slotName, newMaterial);
+	return newMaterial;
 }
 
 void ABall::BeginPlay()
 {
 	Super::BeginPlay();
-	Mesh->SetMobility(EComponentMobility::Movable);
 	
 	// Temporary
-	SetBall(0);
 	Velocity = FVector(1000, 0, 0);
+	BallState = EBallState::Moving;
 }
 
 void ABall::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
+	(this->*States[BallState])(deltaTime);
+}
 
+void ABall::ProcessLaunchingState(float deltaTime)
+{
+}
+
+void ABall::ProcessMovingState(float deltaTime)
+{
 	FHitResult hitResult;
 	AddActorWorldOffset(Velocity * deltaTime, true, &hitResult);
 
-	float speed = Velocity.Size();
-	auto rollAxis = FVector(-Velocity.Y, Velocity.X, 0) / speed;
-	float distance = speed * deltaTime;
-	float amountToRoll = distance / GetBallSetting().Radius;
-	AddActorWorldRotation(FQuat(rollAxis, amountToRoll));
+	RollBall(deltaTime);
 
 	if (hitResult.bBlockingHit)
 	{
-		auto paddle = GS::GetPaddle();
-		if (hitResult.Actor == paddle)
+		ReflectBall(hitResult);
+
+		if (hitResult.Actor->IsA(ADeathZone::StaticClass()))
 		{
-			Velocity = paddle->GetNewBallVelocityAfterHit(Velocity, hitResult.ImpactPoint);
-		}
-		else
-		{
-			Velocity = UKismetMathLibrary::GetReflectionVector(Velocity, hitResult.Normal);
+			StartDeath();
 		}
 	}
+}
+
+void ABall::ProcessDyingState(float deltaTime)
+{
+	DyingTime += deltaTime;
+	auto& ballSettings = GetBallSetting();
+	float dyingPercent = DyingTime / ballSettings.DeathDuration;
+	float opacity = UKismetMathLibrary::Lerp(1, 0, dyingPercent);
+	FrameMaterial->SetScalarParameterValue(TEXT("Opacity"), opacity);
+	GlowMaterial->SetScalarParameterValue(TEXT("Opacity"), opacity);
+	if (DyingTime > ballSettings.DeathDuration)
+	{
+		this->Destroy();
+	}
+}
+
+void ABall::RollBall(float deltaTime)
+{
+	float speed = Velocity.Size();
+	auto rollAxis = FVector(-Velocity.Y, Velocity.X, 0) / speed;
+	float distance = speed * deltaTime;
+	float amountToRoll = distance / GetBallType().Radius;
+	AddActorWorldRotation(FQuat(rollAxis, amountToRoll));
+}
+
+void ABall::ReflectBall(const FHitResult& hitResult)
+{
+	auto paddle = GS::GetPaddle();
+	if (hitResult.Actor == paddle)
+	{
+		Velocity = paddle->GetNewBallVelocityAfterHit(Velocity, hitResult.ImpactPoint);
+	}
+	else
+	{
+		Velocity = UKismetMathLibrary::GetReflectionVector(Velocity, hitResult.Normal);
+	}
+}
+
+void ABall::StartDeath()
+{
+	BallState = EBallState::Dying;
+	Velocity = FVector::ZeroVector;
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ABall::SetBall(int ballId)
 {
 	BallId = ballId;
-	auto& ballSettings = GetBallSetting();
-	Mesh->SetStaticMesh(ballSettings.Mesh);
+	auto& ballType = GetBallType();
+	Mesh->SetStaticMesh(ballType.Mesh);
+}
+
+const FBallType& ABall::GetBallType()
+{
+	return GS::GetTweakables()->Balls[BallId];
 }
 
 const FBallSettings& ABall::GetBallSetting()
 {
-	return GS::GetTweakables()->Balls[BallId];
+	return GS::GetTweakables()->BallSettings;
 }

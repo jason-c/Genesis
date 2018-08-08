@@ -66,8 +66,8 @@ void ABlock::OnHit(UPrimitiveComponent* hitComponent, AActor* otherActor, UPrimi
 	if (otherActor->IsA(ABall::StaticClass()) && !isBlockImmuneDueToShrinking)
 	{
 		auto ball = (ABall*)otherActor;
-		auto& ballSettings = ball->GetBallSetting();
-		HitPointsLeft -= ballSettings.Damage;
+		auto& ballType = ball->GetBallType();
+		HitPointsLeft -= ballType.Damage;
 
 		RecalculateScaleDestination();
 		ShrinkTime = 0;
@@ -119,6 +119,7 @@ void ABlock::ShrinkToDestinationSize(float deltaTime)
 		Mesh->SetWorldScale3D(FVector(CurrentScale, CurrentScale, CurrentScale));
 		if (CurrentScale == 0)
 		{
+			Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			DestroyedEvent.Broadcast();
 		}
 	}

@@ -38,12 +38,19 @@ struct FPaddleAssets
 };
 
 USTRUCT()
-struct FBallSettings
+struct FBallType
 {
 	GENERATED_BODY()
 	UPROPERTY(EditAnywhere) UStaticMesh* Mesh;
 	UPROPERTY(EditAnywhere) float Radius;
 	UPROPERTY(EditAnywhere) float Damage;
+};
+
+USTRUCT()
+struct FBallSettings
+{
+	GENERATED_BODY()
+	UPROPERTY(EditAnywhere) float DeathDuration;
 };
 
 USTRUCT()
@@ -91,7 +98,8 @@ public:
 	UPROPERTY(EditAnywhere) FPaddleCameraSettings PaddleCamera;
 	UPROPERTY(EditAnywhere) FPaddleSettings PaddleSettings;
 	UPROPERTY(EditAnywhere) FPaddleAssets PaddleAssets;
-	UPROPERTY(EditAnywhere) TArray<FBallSettings> Balls;
+	UPROPERTY(EditAnywhere) FBallSettings BallSettings;
+	UPROPERTY(EditAnywhere) TArray<FBallType> Balls;
 	UPROPERTY(EditAnywhere) TArray<FLevelSettings> Levels;
 	UPROPERTY(EditAnywhere) FBlockType BlockTypes[(int)EBlockType::Count];
 	UPROPERTY(EditAnywhere) FBlockSettings BlockSettings;

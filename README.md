@@ -51,3 +51,8 @@ Other Tools
   https://www.blender.org/download/  
   Some basics when dealing with UE4:  
   https://www.youtube.com/watch?v=aC1_m0VdKIY  
+
+* ZenHub. Intall the extension for your browser  
+  https://www.zenhub.com/choose-platform  
+  We're using this to track tasks and bugs  
+  After installing, you should see a ZenHub tab at https://github.com/jason-c/Genesis  

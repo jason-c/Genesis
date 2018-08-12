@@ -5,6 +5,8 @@
 #include "Tweakables.h"
 #include "Paddle.h"
 #include "DeathZone.h"
+#include "Block.h"
+#include "Portal.h"
 #include "GenesisGameState.generated.h"
 
 #define PUBLIC_GET_PRIVATE_SET_PTR(type, name)\
@@ -28,17 +30,24 @@ class UE4PROJECT_API AGenesisGameState : public AGameStateBase
 
 	static UTweakables* Tweakables;
 	PUBLIC_GET_PRIVATE_SET_OBJ(TArray<ADeathZone*>, DeathZones);
+	PUBLIC_GET_PRIVATE_SET_OBJ(TArray<ABlock*>, Blocks);
 	PUBLIC_GET_PRIVATE_SET_PTR(APaddle*, Paddle);
+	PUBLIC_GET_PRIVATE_SET_PTR(APortal*, Portal);
+
+	int BlocksLeft;
 
 public:
-	static AGenesisGameState * Get();
+	static AGenesisGameState* Get();
 	static UTweakables* GetTweakables();
 	virtual void PostInitializeComponents() override;
 
 	void CreateLevel();
 
 private:
-	void CollectLevelCreatedActors();
+	template<class T> void CollectLevelCreatedActors(TArray<T*>* list);
+	template<class T> T* FindLevelCreatedActor();
+
+	UFUNCTION() void OnBlockDestroyed();
 };
 
 typedef AGenesisGameState GS;

@@ -1,13 +1,12 @@
 #include "GenesisGameState.h"
 #include "Engine/StaticMeshActor.h"
 #include "GenesisPlayerState.h"
-#include "Paddle.h"
 #include "PaddleCamera.h"
 #include "Ball.h"
 
 AGenesisGameState* AGenesisGameState::Instance = NULL;
 UTweakables* AGenesisGameState::Tweakables = NULL;
-AGenesisGameState * AGenesisGameState::Get() { return Instance; }
+AGenesisGameState* AGenesisGameState::Get() { return Instance; }
 
 void AGenesisGameState::PostInitializeComponents()
 {
@@ -17,6 +16,7 @@ void AGenesisGameState::PostInitializeComponents()
 
 UTweakables* AGenesisGameState::GetTweakables()
 {
+	// We're doing lazy initialization so that the Tweakables can be used in the ue4 editor
 	if (Tweakables == NULL)
 	{
 		Tweakables = LoadObject<UTweakables>(NULL, TEXT("/Game/Tweakables.Tweakables"), NULL, LOAD_None, NULL);
@@ -48,22 +48,52 @@ void AGenesisGameState::CreateLevel()
 	spawnParameters3.Name = "Ball";
 	auto ball = world->SpawnActor<ABall>(FVector(1000, 0, 0), FRotator(0, 0, 0), spawnParameters3);
 
-	CollectLevelCreatedActors();
+	CollectLevelCreatedActors<ADeathZone>(&DeathZones);
+	CollectLevelCreatedActors<ABlock>(&Blocks);
+
+	Portal = FindLevelCreatedActor<APortal>();
 
 	auto playerState = (AGenesisPlayerState*)PlayerArray[0];
 	playerState->ListenToLevelEvents(this);
 	playerState->InitializeForLevelStarted();
+
+	BlocksLeft = 0;
+	for (auto block : Blocks)
+	{
+		block->DestroyedEvent.AddUObject(this, &AGenesisGameState::OnBlockDestroyed);
+		BlocksLeft++;
+	}
 }
 
-void AGenesisGameState::CollectLevelCreatedActors()
+template<class T> void AGenesisGameState::CollectLevelCreatedActors(TArray<T*>* list)
 {
 	auto world = GetWorld();
-	for (TObjectIterator<ADeathZone> itr; itr; ++itr)
+	list->Empty();
+	for (TObjectIterator<T> itr; itr; ++itr)
 	{
 		if (itr->GetWorld() != world)
 			continue;
-		DeathZones.Add(*itr);
+		list->Add(*itr);
 	}
+}
 
-	// TODO: Clear collected actors when exiting a level
+template<class T> T* AGenesisGameState::FindLevelCreatedActor()
+{
+	auto world = GetWorld();
+	for (TObjectIterator<T> itr; itr; ++itr)
+	{
+		if (itr->GetWorld() != world)
+			continue;
+		return *itr;
+	}
+	return NULL;
+}
+
+void AGenesisGameState::OnBlockDestroyed()
+{
+	BlocksLeft--;
+	if (BlocksLeft <= 0)
+	{
+		Portal->SetEnabled(true);
+	}
 }

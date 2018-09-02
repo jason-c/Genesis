@@ -35,3 +35,7 @@ Saved/
 *.blend1
 
 UE4Project/UE4Project\.sln
+
+Sandbox/UnityShaderTest/Library/
+
+Sandbox/UnityShaderTest/UnityShaderTest\.sln

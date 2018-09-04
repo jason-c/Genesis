@@ -11,6 +11,7 @@ class UE4PROJECT_API APaddle : public APawn
 	GENERATED_BODY()
 
 private:
+	static const FName PaddleXMovementAxisName;
 	static const FName PaddleYMovementAxisName;
 	static const FName LeftEdgeSocketName;
 	static const FName RightEdgeSocketName;

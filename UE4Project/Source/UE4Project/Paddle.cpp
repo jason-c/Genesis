@@ -2,6 +2,7 @@
 #include "GenesisGameState.h"
 #include "Kismet/KismetMathLibrary.h"
 
+const FName APaddle::PaddleXMovementAxisName = "PaddleXMovement";
 const FName APaddle::PaddleYMovementAxisName = "PaddleYMovement";
 const FName APaddle::LeftEdgeSocketName = "LeftEdge";
 const FName APaddle::RightEdgeSocketName = "RightEdge";
@@ -39,10 +40,12 @@ void APaddle::BeginPlay()
 void APaddle::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
+	float xMovement = GetInputAxisValue(PaddleXMovementAxisName);
 	float yMovement = GetInputAxisValue(PaddleYMovementAxisName);
+	xMovement *= GS::GetTweakables()->PaddleSettings.DefaultMouseSpeedScaler;
 	yMovement *= GS::GetTweakables()->PaddleSettings.DefaultMouseSpeedScaler;
 	FHitResult hitResult;
-	AddActorLocalOffset(FVector(0, yMovement, 0), true, &hitResult);
+	AddActorLocalOffset(FVector(xMovement, yMovement, 0), true, &hitResult);
 
 	if(hitResult.bBlockingHit)
 	{
@@ -54,6 +57,7 @@ void APaddle::Tick(float deltaTime)
 void APaddle::SetupPlayerInputComponent(UInputComponent* inputComponent)
 {
 	Super::SetupPlayerInputComponent(inputComponent);
+	inputComponent->BindAxis(PaddleXMovementAxisName);
 	inputComponent->BindAxis(PaddleYMovementAxisName);
 }
 

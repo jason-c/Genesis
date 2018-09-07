@@ -26,6 +26,7 @@ struct FPaddleSettings
 	UPROPERTY(EditAnywhere) float Depth;
 	UPROPERTY(EditAnywhere) float Height;
 	UPROPERTY(EditAnywhere) float EdgesMaxBallReturnAngle;
+	UPROPERTY(EditAnywhere) float VelocityInfluenceOnHitBall;
 };
 
 USTRUCT()

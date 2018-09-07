@@ -58,8 +58,6 @@ void ABall::ProcessMovingState(float deltaTime)
 	FHitResult hitResult;
 	AddActorWorldOffset(Velocity * deltaTime, true, &hitResult);
 
-	RollBall(deltaTime);
-
 	if (hitResult.bBlockingHit)
 	{
 		ReflectBall(hitResult);
@@ -69,6 +67,8 @@ void ABall::ProcessMovingState(float deltaTime)
 			StartDeath();
 		}
 	}
+
+	RollBall(deltaTime);
 }
 
 void ABall::ProcessDyingState(float deltaTime)
@@ -96,12 +96,34 @@ void ABall::RollBall(float deltaTime)
 
 void ABall::ReflectBall(const FHitResult& hitResult)
 {
-	auto paddle = GS::GetPaddle();
-	if (hitResult.Actor == paddle)
+	bool doNormalReflection = true;
+
+	if (hitResult.Actor->IsA(APaddle::StaticClass()))
 	{
-		Velocity = paddle->GetNewBallVelocityAfterHit(Velocity, hitResult.ImpactPoint);
+		auto paddle = (APaddle*)hitResult.Actor.Get();
+		const float RoughlyCos0 = 0.9f;
+		const float RoughlyCos180 = -0.9f;
+		float normalDotForward = FVector::DotProduct(hitResult.ImpactNormal, paddle->GetActorForwardVector());
+		bool didHitFront = normalDotForward > RoughlyCos0;
+		bool didHitBack = normalDotForward < RoughlyCos180;
+
+		if (didHitFront)
+		{
+			doNormalReflection = false;
+			bool isBallMovingTowardPaddle = Velocity.X < 0;
+			if (isBallMovingTowardPaddle)
+			{
+				Velocity = paddle->GetNewBallVelocityAfterHit(Velocity, hitResult.ImpactPoint);
+			}
+		}
+		else if (didHitBack)
+		{
+			doNormalReflection = false;
+			StartDeath();
+		}
 	}
-	else
+	
+	if (doNormalReflection)
 	{
 		Velocity = UKismetMathLibrary::GetReflectionVector(Velocity, hitResult.Normal);
 	}

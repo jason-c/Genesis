@@ -1,4 +1,5 @@
 #include "Paddle.h"
+#include "Ball.h"
 #include "GenesisGameState.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -44,14 +45,8 @@ void APaddle::Tick(float deltaTime)
 	float yMovement = GetInputAxisValue(PaddleYMovementAxisName);
 	xMovement *= GS::GetTweakables()->PaddleSettings.DefaultMouseSpeedScaler;
 	yMovement *= GS::GetTweakables()->PaddleSettings.DefaultMouseSpeedScaler;
-	FHitResult hitResult;
-	AddActorLocalOffset(FVector(xMovement, yMovement, 0), true, &hitResult);
-
-	if(hitResult.bBlockingHit)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Hit!!!!!"));
-		
-	}
+	Velocity = FVector(xMovement, yMovement, 0) / deltaTime;
+	AddActorLocalOffset(Velocity * deltaTime, true);
 }
 
 void APaddle::SetupPlayerInputComponent(UInputComponent* inputComponent)
@@ -77,7 +72,10 @@ FVector APaddle::GetNewBallVelocityAfterHit(const FVector& ballVelocity, const F
 		);
 
 	float currentBallSpeed = ballVelocity.Size();
-	return direction * currentBallSpeed;
+	direction = direction * currentBallSpeed + FVector::ForwardVector * Velocity.X * paddleSettings.VelocityInfluenceOnHitBall;
+	direction.Normalize();
+	float newSpeed = UKismetMathLibrary::Max(currentBallSpeed, Velocity.Size());
+	return direction * newSpeed;
 }
 
 void APaddle::SetLength(float length)

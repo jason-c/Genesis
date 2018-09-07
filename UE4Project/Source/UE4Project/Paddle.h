@@ -23,6 +23,7 @@ private:
 	UBoxComponent* Collider;
 
 	float Length;
+	FVector Velocity;
 
 public:
 	APaddle();

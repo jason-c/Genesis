@@ -3,6 +3,11 @@
 #include "GenesisGameState.h"
 #include "Kismet/KismetMathLibrary.h"
 
+#if WITH_EDITOR
+const FName APaddle::PaddleXMovementForMouseAxisName = "PaddleXMovementForMouse";
+const FName APaddle::PaddleYMovementForMouseAxisName = "PaddleYMovementForMouse";
+#endif
+
 const FName APaddle::PaddleXMovementAxisName = "PaddleXMovement";
 const FName APaddle::PaddleYMovementAxisName = "PaddleYMovement";
 const FName APaddle::LeftEdgeSocketName = "LeftEdge";
@@ -43,8 +48,18 @@ void APaddle::Tick(float deltaTime)
 	Super::Tick(deltaTime);
 	float xMovement = GetInputAxisValue(PaddleXMovementAxisName);
 	float yMovement = GetInputAxisValue(PaddleYMovementAxisName);
-	xMovement *= GS::GetTweakables()->PaddleSettings.DefaultMouseSpeedScaler;
-	yMovement *= GS::GetTweakables()->PaddleSettings.DefaultMouseSpeedScaler;
+	xMovement *= GS::GetTweakables()->PaddleSettings.DefaultGamepadSpeedScalar;
+	yMovement *= GS::GetTweakables()->PaddleSettings.DefaultGamepadSpeedScalar;
+
+#if WITH_EDITOR
+	float xMouseMovement = GetInputAxisValue(PaddleXMovementForMouseAxisName);
+	float yMouseMovement = GetInputAxisValue(PaddleYMovementForMouseAxisName);
+	xMouseMovement *= GS::GetTweakables()->PaddleSettings.DefaultMouseSpeedScalar;
+	yMouseMovement *= GS::GetTweakables()->PaddleSettings.DefaultMouseSpeedScalar;
+	xMovement += xMouseMovement;
+	yMovement += yMouseMovement;
+#endif
+
 	Velocity = FVector(xMovement, yMovement, 0) / deltaTime;
 	AddActorLocalOffset(Velocity * deltaTime, true);
 }
@@ -52,6 +67,10 @@ void APaddle::Tick(float deltaTime)
 void APaddle::SetupPlayerInputComponent(UInputComponent* inputComponent)
 {
 	Super::SetupPlayerInputComponent(inputComponent);
+#if WITH_EDITOR
+	inputComponent->BindAxis(PaddleXMovementForMouseAxisName);
+	inputComponent->BindAxis(PaddleYMovementForMouseAxisName);
+#endif
 	inputComponent->BindAxis(PaddleXMovementAxisName);
 	inputComponent->BindAxis(PaddleYMovementAxisName);
 }

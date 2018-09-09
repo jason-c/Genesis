@@ -11,6 +11,11 @@ class UE4PROJECT_API APaddle : public APawn
 	GENERATED_BODY()
 
 private:
+#if WITH_EDITOR
+	static const FName PaddleXMovementForMouseAxisName;
+	static const FName PaddleYMovementForMouseAxisName;
+#endif
+
 	static const FName PaddleXMovementAxisName;
 	static const FName PaddleYMovementAxisName;
 	static const FName LeftEdgeSocketName;

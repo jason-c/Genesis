@@ -20,7 +20,8 @@ USTRUCT()
 struct FPaddleSettings
 {
 	GENERATED_BODY()
-	UPROPERTY(EditAnywhere) float DefaultMouseSpeedScaler;
+	UPROPERTY(EditAnywhere) float DefaultMouseSpeedScalar;
+	UPROPERTY(EditAnywhere) float DefaultGamepadSpeedScalar;
 	UPROPERTY(EditAnywhere) float InitialMiddleLength;
 	UPROPERTY(EditAnywhere) float EdgeLength;
 	UPROPERTY(EditAnywhere) float Depth;

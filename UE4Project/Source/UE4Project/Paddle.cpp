@@ -72,10 +72,8 @@ FVector APaddle::GetNewBallVelocityAfterHit(const FVector& ballVelocity, const F
 		);
 
 	float currentBallSpeed = ballVelocity.Size();
-	direction = direction * currentBallSpeed + FVector::ForwardVector * Velocity.X * paddleSettings.VelocityInfluenceOnHitBall;
-	direction.Normalize();
-	float newSpeed = UKismetMathLibrary::Max(currentBallSpeed, Velocity.Size());
-	return direction * newSpeed;
+	auto newVelocity = direction * currentBallSpeed + FVector::ForwardVector * Velocity.X * paddleSettings.VelocityInfluenceOnHitBall;
+	return UKismetMathLibrary::ClampVectorSize(newVelocity, currentBallSpeed, newVelocity.Size());
 }
 
 void APaddle::SetLength(float length)

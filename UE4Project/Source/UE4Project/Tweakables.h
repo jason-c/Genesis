@@ -53,6 +53,7 @@ struct FBallSettings
 {
 	GENERATED_BODY()
 	UPROPERTY(EditAnywhere) float DeathDuration;
+	UPROPERTY(EditAnywhere) float LaunchSpeed;
 };
 
 USTRUCT()

@@ -6,10 +6,12 @@
 #if WITH_EDITOR
 const FName APaddle::PaddleXMovementForMouseAxisName = "PaddleXMovementForMouse";
 const FName APaddle::PaddleYMovementForMouseAxisName = "PaddleYMovementForMouse";
+const FName APaddle::LaunchBallForMouseButtonName = "LaunchBallForMouse";
 #endif
 
 const FName APaddle::PaddleXMovementAxisName = "PaddleXMovement";
 const FName APaddle::PaddleYMovementAxisName = "PaddleYMovement";
+const FName APaddle::LaunchBallButtonName = "LaunchBall";
 const FName APaddle::LeftEdgeSocketName = "LeftEdge";
 const FName APaddle::RightEdgeSocketName = "RightEdge";
 
@@ -70,9 +72,26 @@ void APaddle::SetupPlayerInputComponent(UInputComponent* inputComponent)
 #if WITH_EDITOR
 	inputComponent->BindAxis(PaddleXMovementForMouseAxisName);
 	inputComponent->BindAxis(PaddleYMovementForMouseAxisName);
+	inputComponent->BindAction(LaunchBallForMouseButtonName, IE_Pressed, this, &APaddle::OnLaunchBallTriggered);
 #endif
 	inputComponent->BindAxis(PaddleXMovementAxisName);
 	inputComponent->BindAxis(PaddleYMovementAxisName);
+	inputComponent->BindAction(LaunchBallButtonName, IE_Pressed, this, &APaddle::OnLaunchBallTriggered);
+}
+
+void APaddle::OnLaunchBallTriggered()
+{
+	SpawnBall();
+}
+
+void APaddle::SpawnBall()
+{
+	int selectedBallType = 0;
+	auto& ballType = GS::GetTweakables()->Balls[selectedBallType];
+	auto& paddleSettings = GS::GetTweakables()->PaddleSettings;
+	FActorSpawnParameters spawnParameters3;
+	auto positon = GetActorLocation() + GetActorForwardVector() * (paddleSettings.Depth / 2 + ballType.Radius);
+	GetWorld()->SpawnActor<ABall>(positon, FRotator(0, 0, 0), spawnParameters3);
 }
 
 FVector APaddle::GetNewBallVelocityAfterHit(const FVector& ballVelocity, const FVector& impactPositionInWorld)

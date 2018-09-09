@@ -39,7 +39,7 @@ void ABall::BeginPlay()
 	Super::BeginPlay();
 	
 	// Temporary
-	Velocity = FVector(1000, 0, 0);
+	Velocity = FVector::ForwardVector * GS::GetTweakables()->BallSettings.LaunchSpeed;
 	BallState = EBallState::Moving;
 }
 

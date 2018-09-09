@@ -14,10 +14,12 @@ private:
 #if WITH_EDITOR
 	static const FName PaddleXMovementForMouseAxisName;
 	static const FName PaddleYMovementForMouseAxisName;
+	static const FName LaunchBallForMouseButtonName;
 #endif
 
 	static const FName PaddleXMovementAxisName;
 	static const FName PaddleYMovementAxisName;
+	static const FName LaunchBallButtonName;
 	static const FName LeftEdgeSocketName;
 	static const FName RightEdgeSocketName;
 
@@ -44,5 +46,7 @@ public:
 	FVector GetNewBallVelocityAfterHit(const FVector& ballVelocity, const FVector& impactPositionInWorld);
 
 private:
+	void OnLaunchBallTriggered();
+	void SpawnBall();
 	void SetLength(float length);
 };
